@@ -1,0 +1,28 @@
+{
+  "name": "node-redis-sentinel",
+  "version": "0.0.1",
+  "description": "Redis sentinel client for nodejs",
+  "main": "index.js",
+  "scripts": {
+    "test": "mocha"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/ortoo/node-redis-sentinel.git"
+  },
+  "keywords": [
+    "redis"
+  ],
+  "dependencies" : {
+    "redis" : "0.8.2",
+    "q" : "0.9.2"
+  },
+  "devDependencies" : {
+    "mocha" : "*",
+    "chai" : "*"
+  },
+  "author": "Ortoo Technologies",
+  "license": "MIT",
+  "readmeFilename": "README.md",
+  "gitHead": "289f89ee4dd1d675e33afc2bccf95fe483f39392"
+}
