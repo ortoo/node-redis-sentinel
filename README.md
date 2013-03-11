@@ -20,6 +20,7 @@ sentinel.createClient(endpoints, masterName, opts, function(err, masterClient) {
      // it will keep checking the sentinels for a new master and then connect to that.
      // No need to monitor for reconnects etc - everything handled transparently
 });
+```
 
 ## TODO ##
 * It would be nice to make createClient "synchronous" (in the same way that redis.createClient is synchronous) with request buffering etc.
