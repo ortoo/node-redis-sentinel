@@ -1,5 +1,5 @@
 {
-  "name": "node-redis-sentinel",
+  "name": "redis-sentinel",
   "version": "0.0.1",
   "description": "Redis sentinel client for nodejs",
   "main": "index.js",

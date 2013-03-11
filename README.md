@@ -1,7 +1,7 @@
 node-redis-sentinel
 ===================
 
-Sentinel client for redis
+Wrapper around [node_redis](https://github.com/mranney/node_redis) creating a client pointing at the master server which autoupdates when the master goes down.
 
 ```javascript
 var sentinel = require('redis-sentinel');
@@ -15,14 +15,17 @@ var endpoints = [
 var opts = {}; // Standard node_redis client options
 var masterName = 'mymaster';
 
-sentinel.createClient(endpoints, masterName, opts, function(err, masterClient) {
-     // masterClient is a normal redis client, except that if the master goes down
-     // it will keep checking the sentinels for a new master and then connect to that.
-     // No need to monitor for reconnects etc - everything handled transparently
-});
+// masterName and opts are optional - masterName defaults to 'mymaster'
+var redisClient = sentinel.createClient(endpoints, masterName, opts);
+
+// redisClient is a normal redis client, except that if the master goes down
+// it will keep checking the sentinels for a new master and then connect to that.
+// No need to monitor for reconnects etc - everything handled transparently
+// Anything that persists over the normal node_redis reconnect will persist here. 
+// Anything that doesn't, won't.
 ```
 
 ## TODO ##
-* It would be nice to make createClient "synchronous" (in the same way that redis.createClient is synchronous) with request buffering etc.
+* Support for if the master changes but doesn't go down
 * We could probably be cleverer with reconnects etc. and there may be issues with the error handling
 

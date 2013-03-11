@@ -1,4 +1,5 @@
 var redis = require('redis'),
+    net = require('net'),
     Q = require('q');
 
 /**
@@ -39,26 +40,23 @@ function resolveMasterFromSentinel(endpoint, masterName, callback) {
 
 /**
  * [createClient description]
- * @param  {Array} endpoints  Sentinel endpoints
- * @param  {[type]} options   [description]
- * @return {[type]}           [description]
+ * @param  {[type]} endpoints  [description]
+ * @param  {[type]} masterName [description]
+ * @param  {[type]} options    [description]
+ * @return {[type]}            [description]
  */
-function createClient(endpoints, masterName, options, callback) {
+function createClient(endpoints, masterName, options) {
 
-    if (typeof options === 'function') {
-        callback = options;
-        options = null;
+    if (typeof masterName === 'undefined' || masterName === null) {
+        masterName = 'mymaster';
+    } else if (typeof masterName === 'object') {
+        options = masterName;
+        masterName = 'mymaster';
     }
-
-    var sentinelWaitPeriod = 10000;
 
     /**
      * Resolves a master from the sentinel endpoints. Follows the guidelines
      * here: http://redis.io/topics/sentinel-clients
-     * @param  {[type]}   endpoints  [description]
-     * @param  {[type]}   masterName [description]
-     * @param  {Function} callback   [description]
-     * @return {[type]}              [description]
      */
     function resolveMaster(callback) {
 
@@ -99,16 +97,21 @@ function createClient(endpoints, masterName, options, callback) {
         });
     }
 
+    var netClient = new net.Socket();
+    var redisClient = new redis.RedisClient(netClient, options);
+
     // Resolve the master redis server from the sentinel endpoints
     resolveMaster(function(err, ip, port) {
-        if (err) { return callback(err); }
+        if (err) { redisClient.emit('error', err); }
 
-        var redisClient = redis.createClient(port, ip, options);
+        redisClient.port = port;
+        redisClient.host = ip;
+        redisClient.stream.connect(port, ip);
 
         // Hijack the emit method so that we can get in there and
         // do any reconnection on errors, before raising it up the
         // stack...
-        oldEmit = redisClient.emit;
+        var oldEmit = redisClient.emit;
         redisClient.emit = function(eventName) {
 
             // Has an error been hit?
@@ -137,16 +140,16 @@ function createClient(endpoints, masterName, options, callback) {
             // and this error will keep getting raised - lets just keep trying
             // to get a new master...
             resolveMaster(function(_err, ip, port) {
-                if (_err) { throw _err; }
+                if (_err) { oldEmit.call(redisClient, 'error', _err); }
 
                 // Try and reconnect
                 redisClient.port = port;
                 redisClient.host = ip;
             });
         }
-
-        callback(null, redisClient);
     });
+
+    return redisClient;
 }
 
 module.exports.createClient = createClient;

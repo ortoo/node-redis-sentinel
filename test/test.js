@@ -7,8 +7,8 @@ describe('Redis Sentinel tests', function() {
 
         it('should get master correctly with single sentinel', function(done) {
             var endpoints = [{ host: '127.0.0.1', port: 26380}];
-            sentinel.createClient(endpoints, 'mymaster', null, function(err, redisClient) {
-                expect(err).to.be.null;
+            var redisClient = sentinel.createClient(endpoints, 'mymaster');
+            redisClient.on('ready', function() {
                 expect(redisClient.host).to.equal('127.0.0.1');
                 expect(redisClient.port).to.equal("6379");
                 done();
@@ -20,8 +20,8 @@ describe('Redis Sentinel tests', function() {
                 { host: '127.0.0.1', port: 26380},
                 { host: '127.0.0.1', port: 26379}
             ];
-            sentinel.createClient(endpoints, 'mymaster', null, function(err, redisClient) {
-                expect(err).to.be.null;
+            var redisClient = sentinel.createClient(endpoints, 'mymaster');
+            redisClient.on('ready', function() {
                 expect(redisClient.host).to.equal('127.0.0.1');
                 expect(redisClient.port).to.equal("6379");
                 done();
@@ -34,8 +34,8 @@ describe('Redis Sentinel tests', function() {
                 { host: '127.0.0.1', port: 26380},
                 { host: '127.0.0.1', port: 26379}
             ];
-            sentinel.createClient(endpoints, 'mymaster', null, function(err, redisClient) {
-                expect(err).to.be.null;
+            var redisClient = sentinel.createClient(endpoints, 'mymaster');
+            redisClient.on('ready', function() {
                 expect(redisClient.host).to.equal('127.0.0.1');
                 expect(redisClient.port).to.equal("6379");
                 done();
@@ -48,9 +48,9 @@ describe('Redis Sentinel tests', function() {
                 { host: '127.0.0.1', port: 26377},
                 { host: '127.0.0.1', port: 26376}
             ];
-            sentinel.createClient(endpoints, 'mymaster', null, function(err, redisClient) {
+            var redisClient = sentinel.createClient(endpoints, 'mymaster');
+            redisClient.on('error', function(err){
                 expect(err.message).to.equal('Failed to find a master from any of the sentinels');
-                expect(redisClient).to.be.undefined;
                 done();
             });
         });
