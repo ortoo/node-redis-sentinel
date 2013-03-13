@@ -1,5 +1,6 @@
 var sentinel = require('../');
 var expect = require('chai').expect;
+var redis = require('redis');
 
 describe('Redis Sentinel tests', function() {
 
@@ -40,6 +41,16 @@ describe('Redis Sentinel tests', function() {
                 expect(redisClient.port).to.equal("6379");
                 done();
             });
+        });
+
+        it('should return an instance of RedisClient', function(){
+            var endpoints = [
+                { host: 'bad.addr', port: 26378},
+                { host: '127.0.0.1', port: 26380},
+                { host: '127.0.0.1', port: 26379}
+            ];
+            var redisClient = sentinel.createClient(endpoints);
+            expect(redisClient).to.be.an.instanceof(redis.RedisClient);
         });
 
         it('should give an error when no sentinels are active', function(done) {

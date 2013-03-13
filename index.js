@@ -153,3 +153,4 @@ function createClient(endpoints, masterName, options) {
 }
 
 module.exports.createClient = createClient;
+module.exports.redis = redis;
