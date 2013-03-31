@@ -34,6 +34,8 @@ Sentinel.prototype.createClient = function(masterName, opts) {
     var netClient = new net.Socket();
     var client = new redis.RedisClient(netClient, opts);
 
+    var self = this;
+
     function connectClient(resolver) {
         return function(err, host, port) {
             if (err) {
@@ -75,9 +77,8 @@ Sentinel.prototype.createClient = function(masterName, opts) {
                 // In the background the client is going to keep trying to reconnect
                 // and this error will keep getting raised - lets just keep trying
                 // to get a new master...
-                resolver(function(_err, ip, port) {
+                resolver(self.endpoints, masterName, function(_err, ip, port) {
                     if (_err) { oldEmit.call(client, 'error', _err); }
-
                     // Try and reconnect
                     client.port = port;
                     client.host = ip;
@@ -88,7 +89,7 @@ Sentinel.prototype.createClient = function(masterName, opts) {
 
     switch(role){
         case 'sentinel':
-            resolveSentinelClient(endpoints, connectClient(resolveSentinelClient));
+            resolveSentinelClient(endpoints, masterName, connectClient(resolveSentinelClient));
             break;
 
         case 'master':
@@ -238,7 +239,7 @@ function getSlaveFromEndpoint(endpoint, masterName, callback) {
     });
 }
 
-function resolveSentinelClient(endpoints, callback) {
+function resolveSentinelClient(endpoints, masterName, callback) {
     resolveClient(endpoints, isSentinelOk, callback);
 }
 
