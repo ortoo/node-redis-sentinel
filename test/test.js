@@ -140,5 +140,14 @@ describe('Redis Sentinel tests', function() {
                 done();
             });
         });
+
+        it('should give an error when running a command and no sentinels are active', function(done) {
+            this.timeout(2000);
+            var endpoints = [ { host: 'asdf', port: 1}];
+            var redisClient = sentinel.createClient(endpoints, 'mymaster');
+            redisClient.set('key','val',function(err,results){
+                expect(err).not.to.be.null();
+            });
+        });
     });
 });
