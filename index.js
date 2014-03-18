@@ -132,7 +132,7 @@ function resolveClient() {
                 if (err) {
                     deferred.resolve();
                 } else {
-                    // This is the endpoint that has responded so stick it on the top of 
+                    // This is the endpoint that has responded so stick it on the top of
                     // the list
                     var index = endpoints.indexOf(endpoint);
                     endpoints.splice(index, 1);
@@ -165,6 +165,7 @@ function isSentinelOk(endpoint, callback) {
             callbackSent = true;
             callback(err);
         }
+        client.end();
     });
 
     // Send a command just to check we can...
@@ -174,6 +175,7 @@ function isSentinelOk(endpoint, callback) {
         if (err) { return callback(err); }
         callback(null, endpoint.host, String(endpoint.port));
     });
+    client.quit();
 }
 
 function getMasterFromEndpoint(endpoint, masterName, callback) {
@@ -186,6 +188,7 @@ function getMasterFromEndpoint(endpoint, masterName, callback) {
             callbackSent = true;
             callback(err);
         }
+        sentinelClient.end();
     });
 
     sentinelClient.send_command('SENTINEL', ['get-master-addr-by-name', masterName], function(err, result) {
@@ -203,6 +206,7 @@ function getMasterFromEndpoint(endpoint, masterName, callback) {
             callback(null, ip, port);
         }
     });
+    sentinelClient.quit();
 }
 
 function getSlaveFromEndpoint(endpoint, masterName, callback) {
@@ -215,6 +219,7 @@ function getSlaveFromEndpoint(endpoint, masterName, callback) {
             callbackSent = true;
             callback(err);
         }
+        sentinelClient.end();
     });
 
     sentinelClient.send_command('SENTINEL', ['slaves', masterName], function(err, result) {
