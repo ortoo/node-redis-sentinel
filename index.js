@@ -242,6 +242,7 @@ function getSlaveFromEndpoint(endpoint, masterName, callback) {
             callback(null, slaveInfo.ip, slaveInfo.port);
         }
     });
+    sentinelClient.quit();
 }
 
 function resolveSentinelClient(endpoints, masterName, callback) {
