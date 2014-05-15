@@ -199,7 +199,7 @@ function getMasterFromEndpoint(endpoint, masterName, callback) {
 
         // Test the response
         if (result === null) {
-            callback(new Error("Unkown master name: " + masterName));
+            callback(new Error("Unknown master name: " + masterName));
         } else {
             var ip = result[0];
             var port = result[1];
@@ -230,7 +230,7 @@ function getSlaveFromEndpoint(endpoint, masterName, callback) {
 
         // Test the response
         if (result === null) {
-            callback(new Error("Unkown master name: " + masterName));
+            callback(new Error("Unknown master name: " + masterName));
         } else if(result.length === 0){
             callback(new Error("No slaves linked to the master."));
         } else {
