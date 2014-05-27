@@ -141,16 +141,14 @@ describe('Redis Sentinel tests', function() {
             });
         });
 
-        it('should give an error when running a command and no sentinels are active', function(done) {
+        it('should give an error when running a command and no sentinels are active and enable_offline_queue is false', function(done) {
             this.timeout(2000);
             var endpoints = [ { host: 'asdf', port: 1}];
             var redisClient = sentinel.createClient(endpoints, 'mymaster', {enable_offline_queue: false});
-            setTimeout(function(){
-                redisClient.set('key','val',function(err,results){
-                    expect(err).to.not.be.null;
-                    done();
-                });
-            },1000);
+            redisClient.set('key','val',function(err,results){
+                expect(err).to.not.be.null;
+                done();
+            });
         });
     });
 });
