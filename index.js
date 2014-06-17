@@ -60,6 +60,17 @@ Sentinel.prototype.createClient = function(masterName, opts) {
                     oldEmit.apply(client, arguments);
                 }
             };
+            
+            client.on('reconnecting', refreshEndpoints);
+            
+            function refreshEndpoints() {
+                resolver(self.endpoints, masterName, function(_err, ip, port) {
+                    if (_err) { oldEmit.call(client, 'error', _err); }
+                    // Try and reconnect
+                    client.port = port;
+                    client.host = ip;
+                });
+            }
 
             // Crude but may do for now. On error re-resolve the master
             // and retry the connection
@@ -77,12 +88,7 @@ Sentinel.prototype.createClient = function(masterName, opts) {
                 // In the background the client is going to keep trying to reconnect
                 // and this error will keep getting raised - lets just keep trying
                 // to get a new master...
-                resolver(self.endpoints, masterName, function(_err, ip, port) {
-                    if (_err) { oldEmit.call(client, 'error', _err); }
-                    // Try and reconnect
-                    client.port = port;
-                    client.host = ip;
-                });
+                refreshEndpoints();
             }
         };
     }
