@@ -1,6 +1,6 @@
 var redis = require('redis'),
     net = require('net'),
-    Q = require('q');
+    when = require('when');
 
 function Sentinel(endpoints) {
 
@@ -123,13 +123,13 @@ function resolveClient() {
      * We use the algorithm from http://redis.io/topics/sentinel-clients
      * to get a sentinel client and then do 'stuff' with it
      */
-    var promise = Q.resolve();
+    var promise = when.resolve();
 
     // Because finding the master is going to be an async list we will terminate
     // when we find one then use promises...
     promise = endpoints.reduce(function(soFar, endpoint) {
         return soFar.then(function() {
-            var deferred = Q.defer();
+            var deferred = when.defer();
 
             // Farily illegible way of passing (endpoint, arg1, arg2, ..., callback)
             // to checkEndpointFn
