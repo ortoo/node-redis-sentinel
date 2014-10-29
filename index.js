@@ -60,9 +60,9 @@ Sentinel.prototype.createClient = function(masterName, opts) {
                     oldEmit.apply(client, arguments);
                 }
             };
-            
+
             client.on('reconnecting', refreshEndpoints);
-            
+
             function refreshEndpoints() {
                 resolver(self.endpoints, masterName, function(_err, ip, port) {
                     if (_err) { oldEmit.call(client, 'error', _err); }
@@ -160,7 +160,7 @@ function resolveClient() {
     });
 
     // Catch the failure (if there is one)
-    promise.fail(function(err) { callback(err); });
+    promise.catch(function(err) { callback(err); });
 }
 
 function isSentinelOk(endpoint, callback) {
