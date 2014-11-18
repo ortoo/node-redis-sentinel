@@ -10,6 +10,8 @@ function Sentinel(endpoints) {
     }
 
     this.endpoints = endpoints;
+    this.clients = [];
+    this.subscribeToSentinelPubSub();
 }
 
 /**
@@ -33,6 +35,7 @@ Sentinel.prototype.createClient = function(masterName, opts) {
 
     var netClient = new net.Socket();
     var client = new redis.RedisClient(netClient, opts);
+    this.clients.push(client);
 
     var self = this;
 
@@ -110,6 +113,38 @@ Sentinel.prototype.createClient = function(masterName, opts) {
     }
 
     return client;
+};
+
+/*
+ * Listen for '+switch-master' events from Sentinel, and reconnect all clients
+ * when received.
+ */
+Sentinel.prototype.subscribeToSentinelPubSub = function () {
+    this.endpoints.forEach(function(endpoint) {
+        client = redis.createClient(endpoint.port, endpoint.host);
+        client.subscribe("+switch-master", function(error) {
+            if (error) {
+                console.error("Unable to subscribe to Sentinel PUBSUB", endpoint);
+            }
+        });
+        client.on("message", function(channel, message) {
+            console.warn("Received +switch-master message from Redis Sentinel. Reconnecting clients.");
+            sentinel.reconnectAllClients();
+        });
+    });
+}
+
+/*
+ * Ensure that all clients are trying to reconnect.
+ */
+Sentinel.prototype.reconnectAllClients = function() {
+    this.clients.forEach(function(client) {
+        // It is safe to call this multiple times in quick succession, as
+        // might happen with multiple Sentinel instances. Each client
+        // records its reconnect state and will only try to reconnect if 
+        // not already doing so.
+        client.connection_gone("sentinel switch-master");
+    });
 };
 
 function resolveClient() {
@@ -275,8 +310,13 @@ function parseSentinelResponse(resArr){
 }
 
 // Shortcut for quickly getting a client from endpoints
+var sentinel = null
 function createClient(endpoints, masterName, options) {
-    var sentinel = Sentinel(endpoints);
+    if (!sentinel) {
+        // Only create one global sentinel instance to bind to
+        // the Sentinel PUBSUB channel.
+        sentinel = Sentinel(endpoints);
+    }
     return sentinel.createClient(masterName, options);
 }
 
