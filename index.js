@@ -42,9 +42,12 @@ Sentinel.prototype.createClient = function(masterName, opts) {
                 return client.emit('error', err);
             }
 
-            client.port = port;
-            client.host = host;
-            client.stream.connect(port, host);
+            var connectionOption = {
+                port: port,
+                host: host
+            };
+            client.connectionOption = connectionOption;
+            client.stream.connect(connectionOption.port, connectionOption.host);
 
             // Hijack the emit method so that we can get in there and
             // do any reconnection on errors, before raising it up the
@@ -67,8 +70,8 @@ Sentinel.prototype.createClient = function(masterName, opts) {
                 resolver(self.endpoints, masterName, function(_err, ip, port) {
                     if (_err) { oldEmit.call(client, 'error', _err); }
                     // Try and reconnect
-                    client.port = port;
-                    client.host = ip;
+                    client.connectionOption.port = port;
+                    client.connectionOption.host = ip;
                 });
             }
 

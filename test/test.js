@@ -10,8 +10,8 @@ describe('Redis Sentinel tests', function() {
             var endpoints = [{ host: '127.0.0.1', port: 26380}];
             var redisClient = sentinel.createClient(endpoints, 'mymaster');
             redisClient.on('ready', function() {
-                expect(redisClient.host).to.equal('127.0.0.1');
-                expect(redisClient.port).to.equal("6379");
+                expect(redisClient.connectionOption.host).to.equal('127.0.0.1');
+                expect(redisClient.connectionOption.port).to.equal("6379");
                 done();
             });
         });
@@ -20,8 +20,8 @@ describe('Redis Sentinel tests', function() {
             var endpoints = [{ host: '127.0.0.1', port: 26380}];
             var redisClient = sentinel.createClient(endpoints, 'mymaster', {role:'slave'});
             redisClient.on('ready', function() {
-                expect(redisClient.host).to.equal('127.0.0.1');
-                expect(["6381", "6380"]).to.contain(redisClient.port);
+                expect(redisClient.connectionOption.host).to.equal('127.0.0.1');
+                expect(["6381", "6380"]).to.contain(redisClient.connectionOption.port);
                 done();
             });
         });
@@ -30,8 +30,8 @@ describe('Redis Sentinel tests', function() {
             var endpoints = [{ host: '127.0.0.1', port: 26380}];
             var redisClient = sentinel.createClient(endpoints, {role:'sentinel'});
             redisClient.on('ready', function() {
-                expect(redisClient.host).to.equal('127.0.0.1');
-                expect(redisClient.port).to.equal("26380");
+                expect(redisClient.connectionOption.host).to.equal('127.0.0.1');
+                expect(redisClient.connectionOption.port).to.equal("26380");
                 done();
             });
         });
@@ -43,8 +43,8 @@ describe('Redis Sentinel tests', function() {
             ];
             var redisClient = sentinel.createClient(endpoints);
             redisClient.on('ready', function() {
-                expect(redisClient.host).to.equal('127.0.0.1');
-                expect(redisClient.port).to.equal("6379");
+                expect(redisClient.connectionOption.host).to.equal('127.0.0.1');
+                expect(redisClient.connectionOption.port).to.equal("6379");
                 done();
             });
         });
@@ -56,8 +56,8 @@ describe('Redis Sentinel tests', function() {
             ];
             var redisClient = sentinel.createClient(endpoints, 'mymaster', {role:'slave'});
             redisClient.on('ready', function() {
-                expect(redisClient.host).to.equal('127.0.0.1');
-                expect(["6381", "6380"]).to.contain(redisClient.port);
+                expect(redisClient.connectionOption.host).to.equal('127.0.0.1');
+                expect(["6381", "6380"]).to.contain(redisClient.connectionOption.port);
                 done();
             });
         });
@@ -69,8 +69,8 @@ describe('Redis Sentinel tests', function() {
             ];
             var redisClient = sentinel.createClient(endpoints, {role: 'sentinel'});
             redisClient.on('ready', function() {
-                expect(redisClient.host).to.equal('127.0.0.1');
-                expect(redisClient.port).to.equal("26380");
+                expect(redisClient.connectionOption.host).to.equal('127.0.0.1');
+                expect(redisClient.connectionOption.port).to.equal("26380");
                 done();
             });
         });
@@ -84,8 +84,8 @@ describe('Redis Sentinel tests', function() {
             ];
             var redisClient = sentinel.createClient(endpoints, 'mymaster');
             redisClient.on('ready', function() {
-                expect(redisClient.host).to.equal('127.0.0.1');
-                expect(redisClient.port).to.equal("6379");
+                expect(redisClient.connectionOption.host).to.equal('127.0.0.1');
+                expect(redisClient.connectionOption.port).to.equal("6379");
                 done();
             });
         });
@@ -98,8 +98,8 @@ describe('Redis Sentinel tests', function() {
             ];
             var redisClient = sentinel.createClient(endpoints, 'mymaster', {role:'slave'});
             redisClient.on('ready', function() {
-                expect(redisClient.host).to.equal('127.0.0.1');
-                expect(["6381", "6380"]).to.contain(redisClient.port);
+                expect(redisClient.connectionOption.host).to.equal('127.0.0.1');
+                expect(["6381", "6380"]).to.contain(redisClient.connectionOption.port);
                 done();
             });
         });
@@ -112,8 +112,8 @@ describe('Redis Sentinel tests', function() {
             ];
             var redisClient = sentinel.createClient(endpoints, {role: 'sentinel'});
             redisClient.on('ready', function() {
-                expect(redisClient.host).to.equal('127.0.0.1');
-                expect(redisClient.port).to.equal("26380");
+                expect(redisClient.connectionOption.host).to.equal('127.0.0.1');
+                expect(redisClient.connectionOption.port).to.equal("26380");
                 done();
             });
         });
