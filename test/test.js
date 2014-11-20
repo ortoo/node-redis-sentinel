@@ -141,4 +141,29 @@ describe('Redis Sentinel tests', function() {
             });
         });
     });
+
+    describe('data writing', function() {
+
+        var redisClient;
+
+        before(function() {
+            var endpoints = [
+                { host: '127.0.0.1', port: 26380},
+                { host: '127.0.0.1', port: 26379}
+            ];
+            redisClient = sentinel.createClient(endpoints);
+            redisClient.select(9);
+        });
+
+        it('should write a key and return it', function(done) {
+            redisClient.set('__test__', 'some value', function(err) {
+                expect(err).to.be.null;
+                redisClient.get('__test__', function(err, val) {
+                    expect(err).to.be.null;
+                    expect(val).to.equal('some value');
+                    done();
+                });
+            });
+        });
+    });
 });
