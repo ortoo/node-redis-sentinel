@@ -97,11 +97,17 @@ Sentinel.prototype.createClientInternal = function(masterName, opts) {
             client.on('reconnecting', refreshEndpoints);
 
             function refreshEndpoints() {
+                client.connectionOption.port = "";
+                client.connectionOption.host = "";
                 resolver(self.endpoints, masterName, function(_err, ip, port) {
-                    if (_err) { oldEmit.call(client, 'error', _err); }
-                    // Try and reconnect
-                    client.connectionOption.port = port;
-                    client.connectionOption.host = ip;
+                    if (_err) {
+                        oldEmit.call(client, 'error', _err);
+                    } else {
+                        // Try reconnecting.
+                        client.connectionOption.port = port;
+                        client.connectionOption.host = ip;
+                        client.connection_gone("sentinel induced refresh");
+                    }
                 });
             }
 
