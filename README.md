@@ -42,7 +42,6 @@ var sentinelClient = sentinel.createClient(endpoints, {role: 'sentinel'});
 Where you should also transparently get a reconnection to a new slave/sentinel if the existing one goes down.
 
 ## TODO ##
-* Support for if the master changes but doesn't go down
 * We could probably be cleverer with reconnects etc. and there may be issues with the error handling
 
 ## Licence ##
