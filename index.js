@@ -296,9 +296,10 @@ function getSlaveFromEndpoint(endpoint, masterName, callback) {
             var slaveInfoArr = result[Math.floor(Math.random() * result.length)]; //range 0 to result.length -1
             if((slaveInfoArr.length % 2) > 0){
                 callback(new Error("Corrupted response from the sentinel"));
+            } else {
+              var slaveInfo = parseSentinelResponse(slaveInfoArr);
+              callback(null, slaveInfo.ip, slaveInfo.port);
             }
-            var slaveInfo = parseSentinelResponse(slaveInfoArr);
-            callback(null, slaveInfo.ip, slaveInfo.port);
         }
     });
     sentinelClient.quit();
