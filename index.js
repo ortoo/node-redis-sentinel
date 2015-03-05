@@ -66,6 +66,16 @@ Sentinel.prototype.createClientInternal = function(masterName, opts) {
 
     var self = this;
 
+    client.on('end', function() {
+        // if we're purposefully ending, forget us
+        if (this.closing) {
+            var index = self.clients.indexOf(this);
+            if (index !== -1) {
+                self.clients.splice(index, 1);
+            }
+        }
+    });
+
     function connectClient(resolver) {
         return function(err, host, port) {
             if (err) {
@@ -153,6 +163,10 @@ Sentinel.prototype.createClientInternal = function(masterName, opts) {
  * Ensure that all clients are trying to reconnect.
  */
 Sentinel.prototype.reconnectAllClients = function() {
+    // clients in 'closing' state were purposefully closed, and won't ever
+    // reconnect; remove those from our clients before proceeding
+    this.clients = this.clients.filter(function(client) { return !client.closing; });
+
     this.clients.forEach(function(client) {
         // It is safe to call this multiple times in quick succession, as
         // might happen with multiple Sentinel instances. Each client

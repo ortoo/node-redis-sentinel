@@ -166,4 +166,62 @@ describe('Redis Sentinel tests', function() {
             });
         });
     });
+
+    describe('client management', function () {
+        it('should clear client entries when they quit', function (done) {
+            var endpoints = [{host: '127.0.0.1', port: 26380}];
+            var instance = sentinel.Sentinel(endpoints);
+            var redisClient1 = instance.createClient('mymaster');
+            redisClient1.on('ready', function () {
+                // one pubsub, one actual
+                expect(instance.clients.length).to.equal(2);
+
+                var redisClient2 = instance.createClient('mymaster');
+                redisClient2.on('ready', function () {
+                    expect(instance.clients.length).to.equal(3);
+                    redisClient2.quit();
+                });
+
+                redisClient2.on('end', function () {
+                    expect(instance.clients.length).to.equal(2);
+                    expect(redisClient2.info()).to.not.be.ok;
+
+                    redisClient1.info(function(err, info) {
+                        expect(err).to.be.null;
+                        expect(info).to.be.ok;
+
+                        done();
+                    });
+                });
+            });
+        });
+
+        it('should eventually clear client entries when reconnecting', function (done) {
+            var endpoints = [{host: '127.0.0.1', port: 26380}];
+            var instance = sentinel.Sentinel(endpoints);
+            var redisClient1 = instance.createClient('mymaster');
+            redisClient1.on('ready', function () {
+                // one pubsub, one actual
+                expect(instance.clients.length).to.equal(2);
+
+                var redisClient2 = instance.createClient('mymaster');
+                redisClient2.on('ready', function () {
+                    expect(instance.clients.length).to.equal(3);
+                    redisClient2.end();
+
+                    instance.reconnectAllClients();
+                    expect(instance.clients.length).to.equal(2);
+
+                    expect(redisClient2.info()).to.not.be.ok;
+
+                    redisClient1.info(function(err, info) {
+                        expect(err).to.be.null;
+                        expect(info).to.be.ok;
+
+                        done();
+                    });
+                });
+            });
+        });
+    });
 });
