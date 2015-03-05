@@ -210,6 +210,7 @@ describe('Redis Sentinel tests', function() {
                     redisClient2.end();
 
                     instance.reconnectAllClients();
+                    expect(instance.clients.length).to.equal(2);
 
                     expect(redisClient2.info()).to.not.be.ok;
 

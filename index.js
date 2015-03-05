@@ -67,8 +67,8 @@ Sentinel.prototype.createClientInternal = function(masterName, opts) {
     var self = this;
 
     client.on('end', function() {
-        // if we're purposefully ending and we're not our pubsub client, forget us
-        if (this.closing && self.pubsub.indexOf(this) === -1) {
+        // if we're purposefully ending, forget us
+        if (this.closing) {
             var index = self.clients.indexOf(this);
             if (index !== -1) {
                 self.clients.splice(index, 1);
