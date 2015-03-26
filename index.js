@@ -113,7 +113,9 @@ Sentinel.prototype.createClientInternal = function(masterName, opts) {
                     if (_err) {
                         oldEmit.call(client, 'error', _err);
                     } else {
-                        // Try reconnecting.
+                        // Try reconnecting - remove the old stream first.
+                        client.stream.end();
+                        
                         client.connectionOption.port = port;
                         client.connectionOption.host = ip;
                         client.connection_gone("sentinel induced refresh");
