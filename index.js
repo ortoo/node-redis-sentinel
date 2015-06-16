@@ -33,8 +33,7 @@ Sentinel.prototype.createClient = function(masterName, opts) {
         pubsubClient = this.createClientInternal(masterName, pubsubOpts);
         pubsubClient.subscribe("+switch-master", function(error) {
             if (error) {
-                console.error("Unable to subscribe to Sentinel PUBSUB",
-                              host, ":", port);
+                console.error("Unable to subscribe to Sentinel PUBSUB");
             }
         });
         pubsubClient.on("message", function(channel, message) {
