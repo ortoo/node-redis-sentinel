@@ -1,6 +1,8 @@
 node-redis-sentinel
 ===================
 
+**I recommend using [ioredis](https://github.com/luin/ioredis) rather than this library. It has inbuilt sentinel support and is likely much more robust**
+
 Wrapper around [node_redis](https://github.com/mranney/node_redis) creating a client pointing at the master server which autoupdates when the master goes down.
 
 ```javascript
