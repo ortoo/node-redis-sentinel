@@ -14,7 +14,7 @@
     "redis"
   ],
   "dependencies": {
-    "redis": "0.12.x",
+    "redis": "~2.6.3",
     "when": "^3.5.1"
   },
   "devDependencies": {
